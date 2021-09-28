@@ -597,6 +597,10 @@ Mixer::Mixer ( int X, int Y, int W, int H, const char *L ) :
     update_menu();
 
     load_options();
+
+    // Fl::remove_timeout( send_feedback_cb, this );
+    Fl::add_timeout( FEEDBACK_UPDATE_FREQ, send_feedback_cb, this );
+
 }
 
 /* translate message addressed to strip number to appropriate strip */
