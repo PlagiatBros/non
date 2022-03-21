@@ -777,7 +777,9 @@ LADSPAInfo::CheckPlugin(const LADSPA_Descriptor *desc)
              * most everyone else, so we are left in the unfortunate
              * position of having to ignore the hint for TAP plugins
              * and consider them all RT safe */
-            test(LADSPA_IS_HARD_RT_CAPABLE( desc->Properties ), "WARNING: Plugin is not RT capable" );
+
+            if ( desc->UniqueID != 1211 ) // Want to use tape delay, STIILLLL
+                test(LADSPA_IS_HARD_RT_CAPABLE( desc->Properties ), "WARNING: Plugin is not RT capable" );
         }
 
 	return true;
