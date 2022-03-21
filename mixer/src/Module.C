@@ -331,30 +331,18 @@ Module::Port::osc_number_path ( void )
 void
 Module::Port::send_feedback ( void )
 {
-    float f = control_value();
-
-    if ( hints.ranged )
-    {
-        // scale value to range.
-        
-        float scale = hints.maximum - hints.minimum;
-        float offset = hints.minimum;
-        
-        f =  ( f - offset ) / scale;
-    }
-    
-    if ( f > 1.0 )
-        f = 1.0;
-    else if ( f < 0.0 )
-        f = 0.0;
-    
     if ( _scaled_signal )
     {
         /* send feedback for by_name signal */
-        mixer->osc_endpoint->send_feedback( _scaled_signal->path(), f );
-        
+        mixer->osc_endpoint->send_feedback( _scaled_signal->path(), _scaled_signal->value() );
+
         /* send feedback for by number signal */
-        mixer->osc_endpoint->send_feedback( osc_number_path(), f  );
+        mixer->osc_endpoint->send_feedback( osc_number_path(), _scaled_signal->value()  );
+    }
+
+    if ( _unscaled_signal )
+    {
+        mixer->osc_endpoint->send_feedback( _unscaled_signal->path(), _unscaled_signal->value() );
     }
 }
 
@@ -370,6 +358,31 @@ Module::handle_control_changed ( Port *p )
 {
     if ( _editor )
         _editor->handle_control_changed ( p );
+
+    float f = p->control_value();
+
+    if (p->unscaled_signal()) {
+        p->unscaled_signal()->value(f);
+    }
+
+    if (p->scaled_signal()) {
+        if ( p->hints.ranged )
+        {
+            // scale value to range.
+
+            float scale = p->hints.maximum - p->hints.minimum;
+            float offset = p->hints.minimum;
+
+            f =  ( f - offset ) / scale;
+        }
+
+        if ( f > 1.0f )
+            f = 1.0f;
+        else if ( f < 0.0f )
+            f = 0.0f;
+
+        p->scaled_signal()->value(f);
+    }
 
     p->send_feedback();
 }

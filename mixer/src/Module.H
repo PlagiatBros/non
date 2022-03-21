@@ -201,6 +201,7 @@ public:
         void *buffer ( void ) const { return _buf; }
 
         OSC::Signal *scaled_signal ( void ) { return _scaled_signal; }
+        OSC::Signal *unscaled_signal ( void ) { return _unscaled_signal; }
 
         int _by_number_number;
         char *_by_number_path;
