@@ -762,13 +762,13 @@ main ( int argc, char **argv )
     {
         fprintf( stderr, "Could not register JACK client\n" );
         exit(1);
-        
+
     }
 
-    port_ringbuffer = jack_ringbuffer_create( 1024 * 8 );
+    port_ringbuffer = jack_ringbuffer_create( 1024 * 128 );
 
     set_traps();
-        
+
     if ( argc > 1 )
     {
         maybe_activate_jack_client();
