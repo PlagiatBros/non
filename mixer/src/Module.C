@@ -713,7 +713,7 @@ Module::draw_box ( int tx, int ty, int tw, int th )
     if ( audio_input.size() && audio_output.size() )
     {
         /* maybe draw control indicators */
-        if ( control_input.size() )
+        if ( control_input.size() && strcmp( name(), "Meter" )) // exclude meter (see hack note in Meter_Module.C)
         {
             fl_draw_box( FL_ROUNDED_BOX, tx + 4, ty + 4, 5, 5, is_being_controlled() ? FL_YELLOW : fl_inactive( FL_YELLOW ) );
 
