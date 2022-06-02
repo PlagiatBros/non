@@ -46,11 +46,7 @@ Meter_Module::Meter_Module ( )
 
     end();
 
-    /*
-        Hack notes: we use an INPUT port to allow querying the meter level via osc
-        OUTPUT ports always send their value when set, which is way to expensive.
-    */
-    Port p( this, Port::INPUT, Port::CONTROL, "dB level" );
+    Port p( this, Port::OUTPUT, Port::CONTROL, "dB level" );
     p.hints.type = Port::Hints::LOGARITHMIC;
     p.hints.ranged = true;
     p.hints.maximum = 6.0f;
@@ -121,15 +117,15 @@ Meter_Module::configure_inputs ( int n )
         }
     }
 
-    control_input[0].hints.dimensions = n;
-    delete[] (float*)control_input[0].buffer();
+    control_output[0].hints.dimensions = n;
+    delete[] (float*)control_output[0].buffer();
     {
         float *f = new float[n];
 
         for ( int i = n; i--; )
             f[i] = -70.0f;
 
-        control_input[0].connect_to( f );
+        control_output[0].connect_to( f );
     }
 
     if ( control_value )
@@ -139,8 +135,8 @@ Meter_Module::configure_inputs ( int n )
     for ( int i = n; i--; )
         control_value[i] = -70.0f;
 
-    if ( control_input[0].connected() )
-        control_input[0].connected_port()->module()->handle_control_changed( control_input[0].connected_port() );
+    if ( control_output[0].connected() )
+        control_output[0].connected_port()->module()->handle_control_changed( control_output[0].connected_port() );
 
     return true;
 }
@@ -182,10 +178,8 @@ Meter_Module::process ( nframes_t nframes )
 //            float dB = 20 * log10( get_peak_sample( (float*)audio_input[i].buffer(), nframes ) / 2.0f );
         float dB = 20 * log10( buffer_get_peak( (sample_t*) audio_input[i].buffer(), nframes ) );
 
-        ((float*)control_input[0].buffer())[i] = dB;
+        ((float*)control_output[0].buffer())[i] = dB;
         if (dB > control_value[i])
             control_value[i] = dB;
-
-        if (i==0) control_input[0].control_value(dB);
     }
 }

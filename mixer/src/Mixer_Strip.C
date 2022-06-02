@@ -472,7 +472,7 @@ Mixer_Strip::handle_module_added ( Module *m )
         }
         else if ( 0 == strcmp( m->name(), "Meter" ) )
         {
-            meter_indicator->connect_to( &m->control_input[0] );
+            meter_indicator->connect_to( &m->control_output[0] );
         }
     }
     else
