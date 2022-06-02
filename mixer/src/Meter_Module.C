@@ -46,7 +46,7 @@ Meter_Module::Meter_Module ( )
 
     end();
 
-    Port p( this, Port::OUTPUT, Port::CONTROL, "dB level" );
+    Port p( this, Port::OUTPUT, Port::CONTROL);
     p.hints.type = Port::Hints::LOGARITHMIC;
     p.hints.ranged = true;
     p.hints.maximum = 6.0f;
@@ -54,8 +54,17 @@ Meter_Module::Meter_Module ( )
     p.hints.dimensions = 1;
     p.connect_to( new float[1] );
     p.control_value_no_callback( -70.0f );
-
     add_port( p );
+
+    Port p2( this, Port::OUTPUT, Port::CONTROL, "dB level" );
+    p2.hints.type = Port::Hints::LOGARITHMIC;
+    p2.hints.ranged = true;
+    p2.hints.maximum = 6.0f;
+    p2.hints.minimum = -70.0f;
+    p2.hints.dimensions = 1;
+    p2.connect_to( new float[1] );
+    p2.control_value_no_callback( -70.0f );
+    add_port( p2 );
 
     log_create();
 }
@@ -173,6 +182,7 @@ Meter_Module::handle ( int m )
 void
 Meter_Module::process ( nframes_t nframes )
 {
+    float dBmax = -70;
     for ( unsigned int i = 0; i < audio_input.size(); ++i )
     {
 //            float dB = 20 * log10( get_peak_sample( (float*)audio_input[i].buffer(), nframes ) / 2.0f );
@@ -181,5 +191,8 @@ Meter_Module::process ( nframes_t nframes )
         ((float*)control_output[0].buffer())[i] = dB;
         if (dB > control_value[i])
             control_value[i] = dB;
+
+        if (dB > dBmax) dBmax = dB;
     }
+    control_output[1].control_value(dBmax);
 }
