@@ -1710,6 +1710,12 @@ Plugin_Module::process ( nframes_t nframes )
                 _idata->descriptor->run( _idata->handle[i], nframes );
         }
 
+        // Big fat hack: force output controls update
+        for ( unsigned int i = ncontrol_outputs(); i--; )
+        {
+            handle_control_changed( &control_output[i] );
+        }
+
         _latency = get_module_latency();
     }
 }

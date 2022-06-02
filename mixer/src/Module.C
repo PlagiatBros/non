@@ -435,7 +435,7 @@ Module::Port::handle_signal_connection_state_changed ( OSC::Signal *, void *o )
 void
 Module::Port::change_osc_path ( char *path )
 {
-    if ( path )
+    if ( path && name() != NULL)
     {
         char *scaled_path = path;
         char *unscaled_path = NULL;
@@ -445,25 +445,25 @@ Module::Port::change_osc_path ( char *path )
         if ( NULL == _scaled_signal )
         {
             float scaled_default = 0.5f;
-        
+
             if ( hints.ranged )
             {
                 float scale = hints.maximum - hints.minimum;
                 float offset = hints.minimum;
-            
+
                 scaled_default = ( hints.default_value - offset ) / scale;
             }
-   
+
             _scaled_signal = mixer->osc_endpoint->add_signal( scaled_path,
-                                                              OSC::Signal::Input,
+                                                              _direction == INPUT ? OSC::Signal::Input : OSC::Signal::Output,
                                                               0.0, 1.0, scaled_default,
                                                               &Module::Port::osc_control_change_cv, this );
 
-            
+
             _scaled_signal->connection_state_callback( handle_signal_connection_state_changed, this );
 
             _unscaled_signal = mixer->osc_endpoint->add_signal( unscaled_path,
-                                                                OSC::Signal::Input,
+                                                                _direction == INPUT ? OSC::Signal::Input : OSC::Signal::Output,
                                                                 hints.minimum, hints.maximum, hints.default_value,
                                                                 &Module::Port::osc_control_change_exact, this );
         }
@@ -622,6 +622,11 @@ Module::chain ( Chain *v )
         for ( int i = 0; i < ncontrol_inputs(); ++i )
         {
             control_input[i].update_osc_port();
+        }
+
+        for ( int i = 0; i < ncontrol_outputs(); ++i )
+        {
+            control_output[i].update_osc_port();
         }
     }
     else
@@ -1056,9 +1061,18 @@ Module::handle_chain_name_changed ( )
     {
         if ( control_input[i].connected() )
             control_input[i].connected_port()->module()->handle_chain_name_changed();
-    
+
         control_input[i].update_osc_port();
     }
+
+    for ( int i = 0; i < ncontrol_outputs(); ++i )
+    {
+        if ( control_output[i].connected() )
+            control_output[i].connected_port()->module()->handle_chain_name_changed();
+
+        control_output[i].update_osc_port();
+    }
+
 
     if ( ! chain()->strip()->group()->single() )
     {

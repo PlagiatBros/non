@@ -117,22 +117,22 @@ namespace OSC
     {
         if ( f == _value )
             return;
-        
-        _value = f;
-        
-        if ( direction() == Output )
-        {
-            for ( std::list<Peer*>::iterator i = _endpoint->_peers.begin(); 
-                  i != _endpoint->_peers.end();
-                  ++i )
-            {
-                _endpoint->send( (*i)->addr, 
-                                 path(),
-                                 f );
-            }
 
-            // free(s);   
-        }
+        _value = f;
+
+        // if ( direction() == Output )
+        // {
+        //     for ( std::list<Peer*>::iterator i = _endpoint->_peers.begin();
+        //           i != _endpoint->_peers.end();
+        //           ++i )
+        //     {
+        //         _endpoint->send( (*i)->addr,
+        //                          path(),
+        //                          f );
+        //     }
+        //
+        //     // free(s);
+        // }
         /* else if ( direction() == Input ) */
         /* { */
         /*     DMESSAGE( "Sending value feedback for signal %s...", path() ); */
