@@ -1,3 +1,8 @@
+# Plagiat NON
+
+This is a mostly focused on non-mixer with hacks and quality of life improvements for the plagiat brothers. Other non-apps may break.
+
+
 # NON
 
 ## Non-things build instructions
