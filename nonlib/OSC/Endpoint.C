@@ -567,11 +567,13 @@ namespace OSC
             return -1;
         }
 
-        o->_value = f;
+        if (o->_direction == Signal::Input) {
+            o->_value = f;
 
-        if ( o->_handler )
-            o->_handler( f, o->_user_data );
-        
+            if ( o->_handler )
+                o->_handler( f, o->_user_data );
+        }
+
         return 1;
     }
 
