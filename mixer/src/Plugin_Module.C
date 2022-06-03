@@ -1713,7 +1713,9 @@ Plugin_Module::process ( nframes_t nframes )
         // Big fat hack: force output controls update
         for ( unsigned int i = ncontrol_outputs(); i--; )
         {
-            handle_control_changed( &control_output[i] );
+            if (control_output[i].unscaled_signal()) {
+                control_output[i].unscaled_signal()->value(control_output[i].control_value());
+            }
         }
 
         _latency = get_module_latency();
